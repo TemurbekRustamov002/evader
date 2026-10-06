@@ -1,0 +1,1 @@
+Bu yerga target.apk va split.apk fayllarini qo'ying (README.txt ga qarang).
