@@ -1,1 +1,1 @@
-Bu yerga target.apk va split.apk fayllarini qo'ying (README.txt ga qarang).
+target.apk va split.apk fayllarini GitHub Actions avtomatik yaratadi — qo'lda qo'yish shart emas (README.txt ga qarang).
