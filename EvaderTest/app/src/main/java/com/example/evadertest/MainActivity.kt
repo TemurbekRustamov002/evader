@@ -125,7 +125,10 @@ class MainActivity : AppCompatActivity() {
             val sessionId = pi.createSession(params)
             val session = pi.openSession(sessionId)
             assets.open("split.apk").use { input ->
-                session.addSplit("config.evadertest", input)
+                session.openWrite("split.apk", 0, -1).use { output ->
+                    input.copyTo(output)
+                    session.fsync(output)
+                }
             }
             val pending = PendingIntent.getBroadcast(
                 this, sessionId,
@@ -181,7 +184,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun append(msg: String) {
-        logView.append("
-• $msg")
+        logView.append("\n• $msg")
     }
 }
