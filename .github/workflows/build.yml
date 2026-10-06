@@ -1,4 +1,4 @@
-name: Build APK
+name: Build APKs
 on:
   push:
     branches: [main]
@@ -20,11 +20,23 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
-      - name: Build debug APK
+      - name: Build target APK
+        run: gradle -p EvaderTest/target assembleDebug -Pandroid.useAndroidX=true --stacktrace
+      - name: Include target APKs in assets
+        run: |
+          mkdir -p EvaderTest/app/src/main/assets
+          cp EvaderTest/target/app/build/outputs/apk/debug/app-debug.apk EvaderTest/app/src/main/assets/target.apk
+          cp EvaderTest/target/app/build/outputs/apk/debug/app-debug.apk EvaderTest/app/src/main/assets/split.apk
+      - name: Build EvaderTest APK
         run: gradle -p EvaderTest assembleDebug -Pandroid.useAndroidX=true --stacktrace
-      - name: Upload APK
+      - name: Prepare downloads
+        run: |
+          mkdir -p apk-downloads
+          cp EvaderTest/app/build/outputs/apk/debug/app-debug.apk apk-downloads/EvaderTest-v3.apk
+          cp EvaderTest/target/app/build/outputs/apk/debug/app-debug.apk apk-downloads/Target-v3.apk
+      - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
-          name: EvaderTest-apk
-          path: EvaderTest/app/build/outputs/apk/debug/app-debug.apk
+          name: EvaderTest-v3-apks
+          path: apk-downloads/*.apk
           if-no-files-found: error
