@@ -1,4 +1,4 @@
-name: Build APK
+name: Build APKs
 on: [push, workflow_dispatch]
 jobs:
   build:
@@ -13,10 +13,23 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Litsenziyalarni qabul qilish
         run: yes | sdkmanager --licenses > /dev/null
-      - name: APK yig'ish
+
+      - name: 1) Target APK ni yig'ish
+        run: cd target && gradle assembleDebug --stacktrace
+
+      - name: 2) Target APK ni Evader assets ga qo'yish
+        run: |
+          mkdir -p app/src/main/assets
+          cp target/app/build/outputs/apk/debug/app-debug.apk app/src/main/assets/target.apk
+          cp target/app/build/outputs/apk/debug/app-debug.apk app/src/main/assets/split.apk
+
+      - name: 3) EvaderTest APK ni yig'ish
         run: gradle assembleDebug --stacktrace
-      - name: APK ni saqlash
+
+      - name: 4) Ikkala APK ni saqlash
         uses: actions/upload-artifact@v4
         with:
-          name: EvaderTest-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: EvaderTest-barcha-apk
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            target/app/build/outputs/apk/debug/app-debug.apk
